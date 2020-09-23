@@ -9,5 +9,5 @@ modified files
 
 drivers/barcode_emul/barcode_emul_ice4.c  
 arch/arm/configs/jf_dcm_defconfig  
-arch/arm/configs/Makefile  
+arch/arm/mach-msm/Makefile  
 
