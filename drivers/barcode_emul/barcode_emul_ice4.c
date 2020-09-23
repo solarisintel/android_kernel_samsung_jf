@@ -1220,10 +1220,13 @@ static void fw_work(struct work_struct *work)
 		clk_set_rate(main_clk, 12288000);
 	}
 	Is_clk_enabled = 0;
-
+#if defined(CONFIG_MACH_JF_DCM)
+	fpga_enable(1, 1);
+	fpga_enable(0, 1);
+#else
 	fpga_enable(1);
 	fpga_enable(0);
-
+#endif
 }
 
 static int __devinit barcode_emul_probe(struct i2c_client *client,
