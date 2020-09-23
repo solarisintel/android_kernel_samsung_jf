@@ -304,6 +304,9 @@ board-8064-common-all-objs += board-8064-pmic.o board-8064-storage.o board-8064-
 ifdef CONFIG_BCM4335
 board-8064-common-all-objs += board-8064-wifi.o board-8064-bt.o
 endif
+
+CFLAGS_board-jf_dcm.o += -Wno-unused-variable
+
 obj-$(CONFIG_MACH_JF_VZW) += board-jf_vzw.o board-jf_vzw-gpiomux.o
 obj-$(CONFIG_MACH_JF_SPR) += board-jf_spr.o board-jf_spr-gpiomux.o
 obj-$(CONFIG_MACH_JF_ATT) += board-jf_att.o board-jf_att-gpiomux.o
