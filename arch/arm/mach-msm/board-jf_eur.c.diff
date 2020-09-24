@@ -1,0 +1,78 @@
+--- board-jf_eur.c.org	2020-06-10 20:14:55.638310000 +0900
++++ board-jf_eur.c	2020-06-10 20:17:12.922310000 +0900
+@@ -2242,6 +2242,26 @@
+ 	},
+ };
+ #endif /* CONFIG_BCM2079X_NFC_I2C */
++
++#ifdef CONFIG_CAMERA_SW_I2C
++static struct i2c_gpio_platform_data s5k6b2yx_i2c_gpio_data = {
++        .sda_pin = 71,
++        .scl_pin = 70,
++        .udelay = 1,
++        .sda_is_open_drain      = 0,
++        .scl_is_open_drain      = 0,
++        .scl_is_output_only     = 0,
++};
++
++struct platform_device s5k6b2yx_i2c_gpio_device = {
++        .name = "i2c-gpio",
++        .id = MSM_CAMERA_SW_I2C_BUS_ID,
++        .dev = {
++                .platform_data  = &s5k6b2yx_i2c_gpio_data,
++        },
++};
++#endif
++
+ #ifdef CONFIG_SEC_FPGA
+ static struct regulator *barcode_vreg_2p85, *barcode_vreg_l33;
+ static struct regulator *barcode_vreg_1p8;
+@@ -4105,6 +4125,9 @@
+ 	&msm8960_device_ebi1_ch1_erp,
+ 	&epm_adc_device,
+ 	&coresight_tpiu_device,
++#ifdef CONFIG_CAMERA_SW_I2C
++        &s5k6b2yx_i2c_gpio_device,
++#endif
+ 	&apq8064_device_qup_i2c_gsbi7,
+ 	&apq8064_device_qup_i2c_gsbi2,
+ 	&coresight_etb_device,
+@@ -5041,13 +5064,29 @@
+ 	int i;
+ 
+ #ifdef CONFIG_MSM_CAMERA
++#ifdef CONFIG_CAMERA_USE_GSBI7
++        struct i2c_registry apq8064_camera_i2c_devices = {
++                I2C_SURF | I2C_FFA | I2C_LIQUID | I2C_RUMI,
++                APQ_8064_GSBI7_QUP_I2C_BUS_ID,
++                apq8064_camera_board_info.board_info,
++                apq8064_camera_board_info.num_i2c_board_info,
++        };
++#else
+ 	struct i2c_registry apq8064_camera_i2c_devices = {
+ 		I2C_SURF | I2C_FFA | I2C_LIQUID | I2C_RUMI,
+ 		APQ_8064_GSBI4_QUP_I2C_BUS_ID,
+ 		apq8064_camera_board_info.board_info,
+ 		apq8064_camera_board_info.num_i2c_board_info,
+ 	};
+-
++#endif
++#ifdef CONFIG_CAMERA_SW_I2C
++        struct i2c_registry apq8064_front_camera_i2c_devices = {
++                I2C_SURF | I2C_FFA | I2C_LIQUID | I2C_RUMI,
++                MSM_CAMERA_SW_I2C_BUS_ID,
++                apq8064_front_camera_board_info.board_info,
++                apq8064_front_camera_board_info.num_i2c_board_info,
++        };
++#else
+ 	struct i2c_registry apq8064_front_camera_i2c_devices = {
+ 		I2C_SURF | I2C_FFA | I2C_LIQUID | I2C_RUMI,
+ 		APQ_8064_GSBI7_QUP_I2C_BUS_ID,
+@@ -5055,6 +5094,7 @@
+ 		apq8064_front_camera_board_info.num_i2c_board_info,
+ 	};
+ #endif
++#endif
+ 	/* Build the matching 'supported_machs' bitmask */
+ 	if (machine_is_apq8064_cdp())
+ 		mach_mask = I2C_SURF;
